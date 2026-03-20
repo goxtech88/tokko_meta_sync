@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokkoSync — License Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+    <!-- ── Login Gate ── -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card glass">
+            <div class="login-logo">🔐</div>
+            <h1>TokkoSync</h1>
+            <p class="login-sub">Panel de Administración de Licencias</p>
+            <div class="form-group">
+                <label for="admin-password">Contraseña de administrador</label>
+                <input type="password" id="admin-password" placeholder="••••••••" autofocus>
+            </div>
+            <button id="login-btn" class="btn btn-primary btn-full">Ingresar</button>
+            <p id="login-error" class="error-msg hidden"></p>
+        </div>
+    </div>
+
+    <!-- ── Main App ── -->
+    <div id="main-app" class="hidden">
+
+        <!-- Header -->
+        <header class="topbar glass">
+            <div class="topbar-brand">
+                <span>⚡</span>
+                <span>Tokko<span class="accent">Sync</span> <span class="topbar-sub">License Admin</span></span>
+            </div>
+            <div class="topbar-actions">
+                <button id="new-license-btn" class="btn btn-primary">+ Nueva Licencia</button>
+                <button id="logout-btn" class="btn btn-ghost">Salir</button>
+            </div>
+        </header>
+
+        <main class="content">
+
+            <!-- Stats row -->
+            <div class="stats-row" id="stats-row">
+                <div class="stat-pill glass">
+                    <span class="pill-val" id="stat-total">—</span>
+                    <span class="pill-label">Total</span>
+                </div>
+                <div class="stat-pill glass active-pill">
+                    <span class="pill-val" id="stat-active">—</span>
+                    <span class="pill-label">Activas</span>
+                </div>
+                <div class="stat-pill glass revoked-pill">
+                    <span class="pill-val" id="stat-revoked">—</span>
+                    <span class="pill-label">Revocadas</span>
+                </div>
+                <div class="stat-pill glass expired-pill">
+                    <span class="pill-val" id="stat-expired">—</span>
+                    <span class="pill-label">Vencidas</span>
+                </div>
+            </div>
+
+            <!-- Search bar -->
+            <div class="search-bar glass">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Buscar por cliente, email o clave…">
+            </div>
+
+            <!-- Licenses table -->
+            <div class="card glass table-card">
+                <div id="licenses-loading" class="table-loading">Cargando licencias…</div>
+                <table id="licenses-table" class="licenses-table hidden">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>Email</th>
+                            <th>Clave de Licencia</th>
+                            <th>Vencimiento</th>
+                            <th>Estado</th>
+                            <th>Último uso</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="licenses-tbody"></tbody>
+                </table>
+                <div id="no-results" class="no-results hidden">
+                    <span>😕</span>
+                    <p>No se encontraron licencias</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ── Modal: Create / Edit License ── -->
+    <div id="license-modal" class="modal-overlay hidden">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <h2 id="modal-title">Nueva Licencia</h2>
+                <button class="modal-close" id="modal-close">✕</button>
+            </div>
+            <form id="license-form">
+                <input type="hidden" id="modal-license-id">
+                <div class="form-group">
+                    <label for="modal-client-name">Nombre del cliente *</label>
+                    <input type="text" id="modal-client-name" placeholder="Inmobiliaria Ejemplo S.A." required>
+                </div>
+                <div class="form-group">
+                    <label for="modal-client-email">Email</label>
+                    <input type="email" id="modal-client-email" placeholder="contacto@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label for="modal-expires">Vencimiento <span class="optional">(dejar vacío = sin vencimiento)</span></label>
+                    <input type="date" id="modal-expires">
+                </div>
+                <div class="form-group">
+                    <label for="modal-notes">Notas</label>
+                    <textarea id="modal-notes" rows="3" placeholder="Notas internas sobre este cliente…"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="modal-cancel" class="btn btn-ghost">Cancelar</button>
+                    <button type="submit" id="modal-submit" class="btn btn-primary">Crear Licencia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── Modal: View License Key ── -->
+    <div id="key-modal" class="modal-overlay hidden">
+        <div class="modal-card glass" style="max-width:520px">
+            <div class="modal-header">
+                <h2>🔑 Clave de Licencia</h2>
+                <button class="modal-close" id="key-modal-close">✕</button>
+            </div>
+            <p class="key-client-name" id="key-modal-client"></p>
+            <div class="key-display">
+                <code id="key-modal-value"></code>
+                <button class="btn btn-outline btn-sm" id="copy-key-btn">📋 Copiar</button>
+            </div>
+            <p class="key-hint">Compartí esta clave con el cliente para activar su instancia.</p>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+requests
+facebook-business
+python-dotenv
+aiosqlite
+google-analytics-data
+httpx
+python-jose[cryptography]
+passlib[bcrypt]

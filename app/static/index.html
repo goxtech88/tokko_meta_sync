@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokkoSync — Sincronización de Propiedades</title>
+    <meta name="description" content="Sincroniza propiedades de Tokko Broker con Meta Ads Catalog">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+    <!-- ── License Gate ─────────────────────────────────────── -->
+    <div id="license-gate" class="license-gate hidden">
+        <div class="license-card">
+            <div class="license-card-header">
+                <div class="license-logo">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="48" height="48" rx="10" fill="rgba(255,255,255,0.2)"/>
+                        <path d="M14 24C14 18.477 18.477 14 24 14C27.176 14 30.003 15.43 31.9 17.7L28.1 20.4C26.98 19.14 25.58 18.4 24 18.4C20.91 18.4 18.4 20.91 18.4 24C18.4 27.09 20.91 29.6 24 29.6C26.3 29.6 28.24 28.22 29.1 26.2H24V22H34V24C34 29.523 29.523 34 24 34C18.477 34 14 29.523 14 24Z" fill="white"/>
+                    </svg>
+                </div>
+                <h1>Tokko<span class="accent">Sync</span></h1>
+                <p class="license-subtitle">Plataforma de sincronización de propiedades</p>
+            </div>
+            <div class="license-card-body">
+                <p style="font-size:0.82rem; color:var(--text-sec); margin-bottom:var(--space-md);">
+                    Ingresá tu clave de licencia para continuar
+                </p>
+                <input type="text" id="license-key-input" placeholder="xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx" spellcheck="false">
+                <button id="license-activate-btn" class="btn btn-primary" style="width:100%;">
+                    <i data-lucide="key-round"></i> Activar Licencia
+                </button>
+                <p id="license-error" class="error-text hidden"></p>
+                <div class="gx-powered">Powered by <strong>Goxtech SRL</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Main App ──────────────────────────────────────────── -->
+    <div id="app" class="app-container hidden">
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-brand">
+                <i data-lucide="building-2" style="color:rgba(255,255,255,0.9); width:20px; height:20px; flex-shrink:0;"></i>
+                <span class="brand-text">Tokko<span class="accent">Sync</span></span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="#" data-page="dashboard" class="nav-link active" id="nav-dashboard">
+                    <i data-lucide="layout-dashboard" class="nav-icon"></i>
+                    <span>Dashboard</span>
+                </a></li>
+                <li><a href="#" data-page="analytics" class="nav-link" id="nav-analytics">
+                    <i data-lucide="trending-up" class="nav-icon"></i>
+                    <span>Analytics</span>
+                </a></li>
+                <li><a href="#" data-page="properties" class="nav-link" id="nav-properties">
+                    <i data-lucide="house" class="nav-icon"></i>
+                    <span>Propiedades</span>
+                </a></li>
+                <li><a href="#" data-page="sync" class="nav-link" id="nav-sync">
+                    <i data-lucide="arrow-right-left" class="nav-icon"></i>
+                    <span>Sincronizar</span>
+                </a></li>
+                <li><a href="#" data-page="settings" class="nav-link" id="nav-settings">
+                    <i data-lucide="settings-2" class="nav-icon"></i>
+                    <span>Configuración</span>
+                </a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="license-badge" id="license-badge">
+                    <span class="badge-dot"></span>
+                    <span>Licencia activa</span>
+                </div>
+                <div class="sidebar-powered">Powered by <strong>Goxtech SRL</strong></div>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main class="main-content">
+
+            <!-- ── Dashboard ──────────────────────────────── -->
+            <section id="page-dashboard" class="page active">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <p class="subtitle">Resumen de sincronización de propiedades</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card" id="stat-tokko">
+                        <div class="stat-icon"><i data-lucide="building-2"></i></div>
+                        <div class="stat-value" id="stat-tokko-val">—</div>
+                        <div class="stat-label">Propiedades Tokko</div>
+                    </div>
+                    <div class="stat-card" id="stat-synced">
+                        <div class="stat-icon"><i data-lucide="circle-check"></i></div>
+                        <div class="stat-value" id="stat-synced-val">—</div>
+                        <div class="stat-label">Sincronizadas</div>
+                    </div>
+                    <div class="stat-card" id="stat-skipped">
+                        <div class="stat-icon"><i data-lucide="triangle-alert"></i></div>
+                        <div class="stat-value" id="stat-skipped-val">—</div>
+                        <div class="stat-label">Omitidas</div>
+                    </div>
+                    <div class="stat-card" id="stat-last">
+                        <div class="stat-icon"><i data-lucide="clock"></i></div>
+                        <div class="stat-value" id="stat-last-val">—</div>
+                        <div class="stat-label">Última Sync</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><i data-lucide="history"></i> Historial reciente</h2>
+                    <div id="dashboard-history" class="history-list">
+                        <p class="muted">Cargando…</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Analytics ─────────────────────────────── -->
+            <section id="page-analytics" class="page">
+                <div class="page-header">
+                    <h1>Analytics</h1>
+                    <p class="subtitle">Google Analytics 4 — métricas del portal inmobiliario</p>
+                    <div class="period-selector">
+                        <button class="btn btn-sm period-btn active" data-days="7">7 días</button>
+                        <button class="btn btn-sm period-btn" data-days="30">30 días</button>
+                        <button class="btn btn-sm period-btn" data-days="90">90 días</button>
+                    </div>
+                </div>
+
+                <div id="analytics-not-configured" class="card hidden">
+                    <div style="text-align:center; padding:2rem;">
+                        <i data-lucide="bar-chart-2" style="width:40px;height:40px;color:var(--text-hint);margin-bottom:1rem;"></i>
+                        <h2 style="border:none;text-transform:none;font-size:1rem;">GA4 no configurado</h2>
+                        <p class="not-configured-msg muted" style="margin:.5rem 0 1.5rem"></p>
+                        <a href="#" data-page="settings" class="btn btn-primary nav-link">
+                            <i data-lucide="settings-2"></i> Ir a Configuración
+                        </a>
+                    </div>
+                </div>
+
+                <div id="analytics-error" class="card hidden" style="border-left:3px solid var(--error)">
+                    <p class="error-text" style="padding:.5rem 0"></p>
+                </div>
+
+                <div id="analytics-loading" class="card hidden" style="text-align:center;padding:2rem">
+                    <div class="spinner"></div>
+                    <p class="muted" style="margin-top:1rem">Cargando métricas…</p>
+                </div>
+
+                <div id="analytics-content" class="hidden">
+                    <div class="stats-grid stats-grid-5">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="users"></i></div>
+                            <div class="stat-value" id="ga-sessions">—</div>
+                            <div class="stat-label">Sesiones</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="user-round"></i></div>
+                            <div class="stat-value" id="ga-users">—</div>
+                            <div class="stat-label">Usuarios activos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="eye"></i></div>
+                            <div class="stat-value" id="ga-pageviews">—</div>
+                            <div class="stat-label">Páginas vistas</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="timer"></i></div>
+                            <div class="stat-value" id="ga-duration">—</div>
+                            <div class="stat-label">Duración media</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="door-open"></i></div>
+                            <div class="stat-value" id="ga-bounce">—</div>
+                            <div class="stat-label">Bounce rate</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2><i data-lucide="area-chart"></i> Sesiones por día</h2>
+                        <div id="ga-chart" class="ga-chart-container"></div>
+                    </div>
+
+                    <div class="analytics-grid">
+                        <div class="card">
+                            <h2><i data-lucide="map-pin"></i> Páginas más visitadas</h2>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Página</th>
+                                        <th>Vistas</th>
+                                        <th>Usuarios</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ga-pages-body">
+                                    <tr><td colspan="4" class="muted">Cargando…</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card">
+                            <h2><i data-lucide="monitor-smartphone"></i> Dispositivos</h2>
+                            <div id="ga-devices" class="devices-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Propiedades ────────────────────────────── -->
+            <section id="page-properties" class="page">
+                <div class="page-header">
+                    <h1>Propiedades</h1>
+                    <p class="subtitle">Catálogo desde Tokko Broker</p>
+                    <button id="refresh-props-btn" class="btn btn-outline">
+                        <i data-lucide="refresh-cw"></i> Actualizar
+                    </button>
+                </div>
+                <div id="properties-grid" class="properties-grid">
+                    <p class="muted">Hacé clic en "Actualizar" para cargar las propiedades</p>
+                </div>
+            </section>
+
+            <!-- ── Sincronizar ────────────────────────────── -->
+            <section id="page-sync" class="page">
+                <div class="page-header">
+                    <h1>Sincronizar</h1>
+                    <p class="subtitle">Enviar propiedades a Meta Ads Catalog</p>
+                </div>
+                <div class="card sync-panel">
+                    <div class="sync-status" id="sync-current-status">
+                        <div class="sync-icon"><i data-lucide="arrow-right-left" style="width:48px;height:48px;color:var(--primary);"></i></div>
+                        <h2>Listo para sincronizar</h2>
+                        <p>Se obtendrán las propiedades de Tokko Broker, se generará el feed CSV y se subirá a Meta Ads.</p>
+                    </div>
+                    <div class="sync-actions" style="margin-top:var(--space-lg)">
+                        <button id="run-sync-btn" class="btn btn-primary btn-lg">
+                            <i data-lucide="play"></i> Ejecutar Sync
+                        </button>
+                    </div>
+                    <div id="sync-progress" class="sync-progress hidden">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="sync-progress-fill"></div>
+                        </div>
+                        <p id="sync-progress-text" style="font-size:0.82rem;color:var(--text-sec);margin-top:var(--space-xs)">Iniciando…</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2><i data-lucide="history"></i> Historial de sincronizaciones</h2>
+                    <div id="sync-history-list" class="history-list">
+                        <p class="muted">Cargando…</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Configuración ──────────────────────────── -->
+            <section id="page-settings" class="page">
+                <div class="page-header">
+                    <h1>Configuración</h1>
+                    <p class="subtitle">Credenciales de API y opciones</p>
+                </div>
+                <form id="settings-form" class="settings-form" autocomplete="off">
+
+                    <div class="card">
+                        <h2><i data-lucide="link-2"></i> Tokko Broker</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tokko_api_key">API Key</label>
+                                <input type="password" id="tokko_api_key" name="tokko_api_key" placeholder="Tu API Key de Tokko Broker">
+                            </div>
+                            <div class="form-group">
+                                <label for="tokko_company_id">Company ID</label>
+                                <input type="text" id="tokko_company_id" name="tokko_company_id" placeholder="ID de empresa en Tokko">
+                            </div>
+                        </div>
+                        <button type="button" id="test-tokko-btn" class="btn btn-outline">
+                            <i data-lucide="plug-zap"></i> Test conexión
+                        </button>
+                        <p id="test-tokko-result" class="test-result hidden"></p>
+                    </div>
+
+                    <div class="card">
+                        <h2><i data-lucide="megaphone"></i> Meta Ads</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="meta_app_id">App ID</label>
+                                <input type="text" id="meta_app_id" name="meta_app_id" placeholder="Meta App ID">
+                            </div>
+                            <div class="form-group">
+                                <label for="meta_app_secret">App Secret</label>
+                                <input type="password" id="meta_app_secret" name="meta_app_secret" placeholder="Meta App Secret">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="meta_access_token">Access Token</label>
+                            <input type="password" id="meta_access_token" name="meta_access_token" placeholder="Long-lived Access Token">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="meta_business_id">Business ID</label>
+                                <input type="text" id="meta_business_id" name="meta_business_id" placeholder="Business Manager ID">
+                            </div>
+                            <div class="form-group">
+                                <label for="meta_catalog_id">Catalog ID <span class="optional">(opcional)</span></label>
+                                <input type="text" id="meta_catalog_id" name="meta_catalog_id" placeholder="Si ya existe">
+                            </div>
+                        </div>
+                        <button type="button" id="test-meta-btn" class="btn btn-outline">
+                            <i data-lucide="plug-zap"></i> Test conexión
+                        </button>
+                        <p id="test-meta-result" class="test-result hidden"></p>
+                    </div>
+
+                    <div class="card">
+                        <h2><i data-lucide="bar-chart-2"></i> Google Analytics 4</h2>
+                        <p class="field-hint">La cuenta de servicio debe tener rol de Lector en la propiedad GA4.</p>
+                        <div class="form-group">
+                            <label for="ga4_property_id">Property ID</label>
+                            <input type="text" id="ga4_property_id" name="ga4_property_id" placeholder="Ej: 123456789 (solo el número)">
+                        </div>
+                        <div class="form-group">
+                            <label for="ga4_credentials_json">Service Account JSON</label>
+                            <textarea id="ga4_credentials_json" name="ga4_credentials_json" rows="5"
+                                placeholder='{"type":"service_account","project_id":"...","private_key":"...","client_email":"...'></textarea>
+                        </div>
+                        <button type="button" id="test-ga4-btn" class="btn btn-outline">
+                            <i data-lucide="plug-zap"></i> Test GA4
+                        </button>
+                        <p id="test-ga4-result" class="test-result hidden"></p>
+                    </div>
+
+                    <div class="card">
+                        <h2><i data-lucide="shield-check"></i> Servidor de Licencias</h2>
+                        <p class="field-hint">URL del panel admin de licencias para validación online.</p>
+                        <div class="form-group">
+                            <label for="license_server_url">URL del servidor <span class="optional">(opcional)</span></label>
+                            <input type="url" id="license_server_url" name="license_server_url" placeholder="http://localhost:8001">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2><i data-lucide="globe"></i> General</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="property_base_url">URL base de propiedades</label>
+                                <input type="url" id="property_base_url" name="property_base_url" placeholder="https://www.tusitio.com/propiedad">
+                            </div>
+                            <div class="form-group">
+                                <label for="sync_operation_type">Tipo de operación</label>
+                                <select id="sync_operation_type" name="sync_operation_type">
+                                    <option value="sale">Venta</option>
+                                    <option value="rent">Alquiler</option>
+                                    <option value="all">Todas</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i data-lucide="save"></i> Guardar configuración
+                    </button>
+                    <p id="settings-save-result" class="test-result hidden" style="margin-top:var(--space-md)"></p>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/pages/dashboard.js"></script>
+    <script src="/static/js/pages/analytics.js"></script>
+    <script src="/static/js/pages/settings.js"></script>
+    <script src="/static/js/pages/properties.js"></script>
+    <script src="/static/js/pages/sync.js"></script>
+    <script src="/static/js/app.js"></script>
+
+    <script>
+        // Initialize Lucide icons after all content loads
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+        });
+        // Re-render icons after SPA page changes (called from app.js)
+        window.rerenderIcons = () => { if (window.lucide) lucide.createIcons(); };
+    </script>
+</body>
+</html>

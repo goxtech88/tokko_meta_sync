@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+
+  # ── Main TokkoSync app (port 8000) ──────────────────────────
+  tokko-meta-sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tokko-meta-sync
+    ports:
+      - "8000:8000"
+    volumes:
+      - app-data:/app/data
+    environment:
+      # Optional: point to license-admin for online validation
+      - LICENSE_SERVER_URL=http://license-admin:8001
+    depends_on:
+      - license-admin
+    restart: unless-stopped
+
+  # ── License Admin panel (port 8001) ─────────────────────────
+  license-admin:
+    build:
+      context: ./license-admin
+      dockerfile: Dockerfile
+    container_name: license-admin
+    ports:
+      - "8001:8001"
+    volumes:
+      - license-data:/app/data
+    environment:
+      # IMPORTANT: Change these before deploying!
+      - ADMIN_PASSWORD=admin1234
+      - JWT_SECRET=change-me-in-production-super-secret-key
+    restart: unless-stopped
+
+volumes:
+  app-data:
+  license-data:
